@@ -207,3 +207,12 @@ mvn -q test
 
 如需启动服务：
 - 启动模块：`ddd-start`
+
+---
+
+## AI 协作规范入口
+
+- 团队统一提示词：`docs/AI-DEVELOPMENT-PROMPT.md`
+- 本地技能模板：`.agents/skills/chaosopen-ddd-dev/SKILL.md`
+
+建议所有 AI 开发任务先加载这两份规范，再开始改代码。
