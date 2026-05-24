@@ -2,6 +2,7 @@ package com.chaosopen.ddd.domain.inventory.gateway;
 
 import com.chaosopen.ddd.domain.inventory.model.Inventory;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface InventoryGateway {
@@ -9,4 +10,6 @@ public interface InventoryGateway {
     Optional<Inventory> findByStoreIdAndSkuId(Long storeId, Long skuId);
 
     void save(Inventory inventory);
+
+    void saveBatch(List<Inventory> inventories);
 }

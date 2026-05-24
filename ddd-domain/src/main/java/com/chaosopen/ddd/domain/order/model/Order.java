@@ -106,6 +106,19 @@ public class Order {
     }
 
     /**
+     * 统计订单总件数。
+     *
+     * @return 订单件数合计
+     */
+    public int totalQuantity() {
+        int totalQuantity = 0;
+        for (OrderItem item : orderItems) {
+            totalQuantity += item.getQuantity() == null ? 0 : item.getQuantity();
+        }
+        return totalQuantity;
+    }
+
+    /**
      * 提交订单，流转到待支付。
      */
     public void submit() {

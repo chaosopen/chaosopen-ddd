@@ -8,6 +8,7 @@ import com.chaosopen.ddd.infrastructure.inventory.persistence.dataobject.Invento
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -52,6 +53,16 @@ public class InventoryGatewayImpl implements InventoryGateway {
             inventory.setInventoryId(inventoryDO.getInventoryId());
         } else {
             inventoryMapper.updateById(inventoryDO);
+        }
+    }
+
+    @Override
+    public void saveBatch(List<Inventory> inventories) {
+        if (inventories == null || inventories.isEmpty()) {
+            return;
+        }
+        for (Inventory inventory : inventories) {
+            save(inventory);
         }
     }
 }
