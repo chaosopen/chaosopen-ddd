@@ -44,7 +44,7 @@ public class OrderDomainServiceImpl implements OrderDomainService {
         Order order = buildAndSubmitOrder(orderCreateInfo);
         int totalQuantity = order.totalQuantity();
         orderGateway.save(order);
-        publishOrderCreatedEvent(order, orderCreateInfo.getUser().getMobile());
+        publishOrderCreatedEvent(order, orderCreateInfo.getUser().getMobile(), totalQuantity);
         return new CreateOrderResult(order, totalQuantity);
     }
 
@@ -88,7 +88,7 @@ public class OrderDomainServiceImpl implements OrderDomainService {
         return order;
     }
 
-    private void publishOrderCreatedEvent(Order order, String mobile) {
+    private void publishOrderCreatedEvent(Order order, String mobile, Integer totalQuantity) {
         OrderCreatedDomainEvent event = new OrderCreatedDomainEvent();
         event.setOrderId(order.getOrderId());
         event.setOrderNo(order.getOrderNo());
@@ -96,6 +96,7 @@ public class OrderDomainServiceImpl implements OrderDomainService {
         event.setMobile(mobile);
         event.setTotalAmount(order.getTotalAmount());
         event.setStoreId(order.getStoreId());
+        event.setTotalQuantity(totalQuantity);
         event.setCreateTime(LocalDateTime.now());
         domainEventPublisher.publish(event);
     }

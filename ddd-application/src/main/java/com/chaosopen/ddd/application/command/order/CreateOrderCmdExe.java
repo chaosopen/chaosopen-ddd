@@ -46,7 +46,6 @@ public class CreateOrderCmdExe {
         inventoryDomainService.deductAndSaveBatch(store, items);
         productDomainService.increaseSalesAndSave(productOrderData.getProductSalesDelta());
         CreateOrderResult result = orderDomainService.placeOrder(items, user, store, productOrderData.getSkuMap());
-        userDomainService.addPointsAndSave(user, result.getOrderTotalQuantity());
         return OrderApplicationConverter.toCreateOrderCO(result.getOrder());
     }
 

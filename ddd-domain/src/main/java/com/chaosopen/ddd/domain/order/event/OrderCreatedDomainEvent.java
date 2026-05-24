@@ -39,6 +39,10 @@ public class OrderCreatedDomainEvent implements Serializable {
      */
     private Long storeId;
     /**
+     * 订单总件数。
+     */
+    private Integer totalQuantity;
+    /**
      * 事件创建时间。
      */
     private LocalDateTime createTime;
