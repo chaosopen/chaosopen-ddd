@@ -1,8 +1,8 @@
 package com.chaosopen.ddd.application.event.handler;
 
-import com.chaosopen.ddd.client.dto.mq.OrderCreatedMessage;
 import com.chaosopen.ddd.domain.order.event.OrderCreatedDomainEvent;
 import com.chaosopen.ddd.domain.order.gateway.OrderMessageGateway;
+import com.chaosopen.ddd.domain.order.model.OrderCreatedMessageModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class OrderCreatedEventHandler {
         if (event == null) {
             return;
         }
-        OrderCreatedMessage message = new OrderCreatedMessage(
+        OrderCreatedMessageModel message = new OrderCreatedMessageModel(
                 event.getOrderId(),
                 event.getOrderNo(),
                 event.getUserId(),

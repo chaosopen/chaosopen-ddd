@@ -3,6 +3,7 @@ package com.chaosopen.ddd.infrastructure.order.gatewayImpl;
 import com.chaosopen.ddd.client.dto.mq.OrderCreatedMessage;
 import com.chaosopen.ddd.common.constant.MqConstants;
 import com.chaosopen.ddd.domain.order.gateway.OrderMessageGateway;
+import com.chaosopen.ddd.domain.order.model.OrderCreatedMessageModel;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
@@ -18,10 +19,19 @@ public class OrderMessageGatewayImpl implements OrderMessageGateway {
     private RabbitTemplate rabbitTemplate;
 
     @Override
-    public void publishOrderCreated(OrderCreatedMessage message) {
+    public void publishOrderCreated(OrderCreatedMessageModel message) {
         if (message == null) {
             return;
         }
-        rabbitTemplate.convertAndSend(MqConstants.ORDER_CREATED_FANOUT_EXCHANGE, "", message);
+        OrderCreatedMessage mqMessage = new OrderCreatedMessage(
+                message.getOrderId(),
+                message.getOrderNo(),
+                message.getUserId(),
+                message.getMobile(),
+                message.getTotalAmount(),
+                message.getStoreId(),
+                message.getTotalQuantity()
+        );
+        rabbitTemplate.convertAndSend(MqConstants.ORDER_CREATED_FANOUT_EXCHANGE, "", mqMessage);
     }
 }

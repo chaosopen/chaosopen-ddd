@@ -1,6 +1,6 @@
 package com.chaosopen.ddd.domain.order.gateway;
 
-import com.chaosopen.ddd.client.dto.mq.OrderCreatedMessage;
+import com.chaosopen.ddd.domain.order.model.OrderCreatedMessageModel;
 
 /**
  * 订单消息网关抽象。
@@ -12,5 +12,5 @@ public interface OrderMessageGateway {
      *
      * @param message 消息体
      */
-    void publishOrderCreated(OrderCreatedMessage message);
+    void publishOrderCreated(OrderCreatedMessageModel message);
 }
