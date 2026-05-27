@@ -58,6 +58,10 @@ public class Order {
      * 订单项列表。
      */
     private List<OrderItem> orderItems = new ArrayList<OrderItem>();
+    /**
+     * 聚合内暂存的领域事件。
+     */
+    private final List<Object> domainEvents = new ArrayList<Object>();
 
     /**
      * 初始化订单。
@@ -158,6 +162,29 @@ public class Order {
         }
         this.status = OrderStatus.CANCELLED;
         this.cancelledAt = LocalDateTime.now();
+    }
+
+    /**
+     * 暂存领域事件。
+     *
+     * @param event 领域事件
+     */
+    public void registerDomainEvent(Object event) {
+        if (event == null) {
+            return;
+        }
+        domainEvents.add(event);
+    }
+
+    /**
+     * 拉取并清空聚合内暂存事件。
+     *
+     * @return 领域事件快照
+     */
+    public List<Object> pullDomainEvents() {
+        List<Object> snapshot = new ArrayList<Object>(domainEvents);
+        domainEvents.clear();
+        return snapshot;
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.chaosopen.ddd.application.config;
 
-import com.chaosopen.ddd.domain.event.DomainEventPublisher;
 import com.chaosopen.ddd.domain.inventory.gateway.InventoryGateway;
 import com.chaosopen.ddd.domain.inventory.service.InventoryDomainService;
 import com.chaosopen.ddd.domain.inventory.service.impl.InventoryDomainServiceImpl;
@@ -27,11 +26,9 @@ public class DomainServiceConfig {
      * 订单领域服务装配。
      */
     @Bean
-    public OrderDomainService orderDomainService(OrderGateway orderGateway,
-                                                 DomainEventPublisher domainEventPublisher) {
+    public OrderDomainService orderDomainService(OrderGateway orderGateway) {
         OrderDomainServiceImpl service = new OrderDomainServiceImpl();
         service.setOrderGateway(orderGateway);
-        service.setDomainEventPublisher(domainEventPublisher);
         return service;
     }
 

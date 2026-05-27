@@ -3,6 +3,7 @@ package com.chaosopen.ddd.application.command.order;
 import com.chaosopen.ddd.application.converter.order.OrderApplicationConverter;
 import com.chaosopen.ddd.client.dto.CreateOrderCmd;
 import com.chaosopen.ddd.client.dto.clientobject.CreateOrderCO;
+import com.chaosopen.ddd.domain.event.DomainEventPublisher;
 import com.chaosopen.ddd.domain.inventory.service.InventoryDomainService;
 import com.chaosopen.ddd.domain.order.dto.CreateOrderResult;
 import com.chaosopen.ddd.domain.order.model.OrderItem;
@@ -12,6 +13,8 @@ import com.chaosopen.ddd.domain.product.service.ProductDomainService;
 import com.chaosopen.ddd.domain.store.model.Store;
 import com.chaosopen.ddd.domain.user.model.User;
 import com.chaosopen.ddd.domain.user.service.UserDomainService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +23,7 @@ import java.util.List;
 
 @Component
 public class CreateOrderCmdExe {
+    private static final Logger log = LoggerFactory.getLogger(CreateOrderCmdExe.class);
 
     @Autowired
     private OrderDomainService orderDomainService;
@@ -29,6 +33,8 @@ public class CreateOrderCmdExe {
     private InventoryDomainService inventoryDomainService;
     @Autowired
     private UserDomainService userDomainService;
+    @Autowired
+    private DomainEventPublisher domainEventPublisher;
 
     /**
      * 下单应用编排：
@@ -46,7 +52,22 @@ public class CreateOrderCmdExe {
         inventoryDomainService.deductAndSaveBatch(store, items);
         productDomainService.increaseSalesAndSave(productOrderData.getProductSalesDelta());
         CreateOrderResult result = orderDomainService.placeOrder(items, user, store, productOrderData.getSkuMap());
+        publishDomainEvents(result);
         return OrderApplicationConverter.toCreateOrderCO(result.getOrder());
+    }
+
+    private void publishDomainEvents(CreateOrderResult result) {
+        if (result == null || result.getOrder() == null) {
+            return;
+        }
+        List<Object> domainEvents = result.getOrder().pullDomainEvents();
+        if (domainEvents.isEmpty()) {
+            return;
+        }
+        domainEventPublisher.publish(domainEvents);
+        log.info("publish domain events in application layer, eventCount={}, orderNo={}",
+                domainEvents.size(),
+                result.getOrder().getOrderNo());
     }
 
     private Store buildStore(Long storeId) {

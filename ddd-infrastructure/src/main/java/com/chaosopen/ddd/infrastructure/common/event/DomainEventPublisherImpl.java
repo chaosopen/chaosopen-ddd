@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.util.List;
+
 
 @Component
 public class DomainEventPublisherImpl implements DomainEventPublisher {
@@ -28,5 +30,15 @@ public class DomainEventPublisherImpl implements DomainEventPublisher {
                 applicationEventPublisher.publishEvent(domainEvent);
             }
         });
+    }
+
+    @Override
+    public void publish(List<Object> domainEvents) {
+        if (domainEvents == null || domainEvents.isEmpty()) {
+            return;
+        }
+        for (Object domainEvent : domainEvents) {
+            publish(domainEvent);
+        }
     }
 }

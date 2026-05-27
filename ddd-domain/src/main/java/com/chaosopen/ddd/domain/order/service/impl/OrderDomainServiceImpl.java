@@ -2,7 +2,6 @@ package com.chaosopen.ddd.domain.order.service.impl;
 
 import com.chaosopen.ddd.common.enums.ErrorCode;
 import com.chaosopen.ddd.common.exception.BizException;
-import com.chaosopen.ddd.domain.event.DomainEventPublisher;
 import com.chaosopen.ddd.domain.order.dto.CreateOrderResult;
 import com.chaosopen.ddd.domain.order.event.OrderCreatedDomainEvent;
 import com.chaosopen.ddd.domain.order.gateway.OrderGateway;
@@ -27,14 +26,9 @@ import java.util.Map;
 public class OrderDomainServiceImpl implements OrderDomainService {
 
     private OrderGateway orderGateway;
-    private DomainEventPublisher domainEventPublisher;
 
     public void setOrderGateway(OrderGateway orderGateway) {
         this.orderGateway = orderGateway;
-    }
-
-    public void setDomainEventPublisher(DomainEventPublisher domainEventPublisher) {
-        this.domainEventPublisher = domainEventPublisher;
     }
 
     @Override
@@ -44,7 +38,7 @@ public class OrderDomainServiceImpl implements OrderDomainService {
         Order order = buildAndSubmitOrder(orderCreateInfo);
         int totalQuantity = order.totalQuantity();
         orderGateway.save(order);
-        publishOrderCreatedEvent(order, orderCreateInfo.getUser().getMobile(), totalQuantity);
+        order.registerDomainEvent(buildOrderCreatedEvent(order, orderCreateInfo.getUser().getMobile(), totalQuantity));
         return new CreateOrderResult(order, totalQuantity);
     }
 
@@ -88,7 +82,7 @@ public class OrderDomainServiceImpl implements OrderDomainService {
         return order;
     }
 
-    private void publishOrderCreatedEvent(Order order, String mobile, Integer totalQuantity) {
+    private OrderCreatedDomainEvent buildOrderCreatedEvent(Order order, String mobile, Integer totalQuantity) {
         OrderCreatedDomainEvent event = new OrderCreatedDomainEvent();
         event.setOrderId(order.getOrderId());
         event.setOrderNo(order.getOrderNo());
@@ -98,6 +92,6 @@ public class OrderDomainServiceImpl implements OrderDomainService {
         event.setStoreId(order.getStoreId());
         event.setTotalQuantity(totalQuantity);
         event.setCreateTime(LocalDateTime.now());
-        domainEventPublisher.publish(event);
+        return event;
     }
 }
